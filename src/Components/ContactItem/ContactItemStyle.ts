@@ -1,5 +1,4 @@
 import { css } from '@emotion/react';
-import { responsiveStyle } from '../../Constants';
 
 export const listItemContainer = css({  
       background: '#8c8c8c',
