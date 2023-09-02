@@ -1,5 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { css, jsx } from '@emotion/react'
 import React from "react";
 import { contactItemNameContainer, editButtonIcon, iconContainer, listItemContainer, listItemLowerContainer, listItemUpperContainer } from './ContactItemStyle';
 import { ContactItemPropType } from './ContactItemTypes';
