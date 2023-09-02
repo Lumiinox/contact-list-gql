@@ -1,5 +1,6 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { css, jsx } from '@emotion/react'
 import React from "react";
 import {contactListBackground, contentContainer, headerContainer, mainBodyContainer, mainTitle} from "./ContactListStyle";
@@ -9,7 +10,9 @@ import { dummyData } from '../../ContactListDUMMY';
 
 export function ContactListPage(){   
    const [width, setWidth] = useState(0);
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    const [isAPhone, setIsAPhone] = useState(false);
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    const [contactData, setContactData] = useState(dummyData.data.contact);
 
    useEffect(() => {
