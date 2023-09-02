@@ -3,7 +3,7 @@ import React from 'react';
 import './App.css';
 import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink, from, } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-import { GetContactList } from './Components/GetContactList';
+import { ContactListPage } from './Page/ContactList/ContactListIndex';
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
@@ -27,10 +27,7 @@ const client = new ApolloClient({
 function App() {
   return (
   <ApolloProvider client={client}>
-    <>
-      {" THIS WEBSITE IS RUNNING "}
-      <GetContactList></GetContactList>
-    </>
+    <ContactListPage></ContactListPage>
   </ApolloProvider>);
 }
 
