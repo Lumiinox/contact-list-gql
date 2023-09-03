@@ -131,7 +131,7 @@ export const dummyData = {
             "number": "+0218890121"
           }
         ]
-      }
+      },
     ]
   }
 }

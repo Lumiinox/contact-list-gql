@@ -1,13 +1,13 @@
 import { css } from '@emotion/react';
 
-export const listItemContainer = css({  
-      background: '#8c8c8c',
-      color: '#ffffff',
+export const listItemContainer = (isFavorite: boolean) => css({  
+      background: '#00000',
+      color: isFavorite ? '#FFD500' : '#ffffff',
       width: '40vh',
       margin: '16px 0',
       padding: '4px',
-      borderRadius: '10px',
       fontSize: '16px',
+      borderTop: isFavorite ? '2px solid #FFD500' : '#2px solid #FFFFFF',
    })
 ;
 
@@ -28,7 +28,7 @@ export const listItemLowerContainer = css({
 export const iconContainer = css({
    display: 'flex',
    justifyContent: 'space-between',
-   width: '35%',
+   width: '25%',
 })
 
 
