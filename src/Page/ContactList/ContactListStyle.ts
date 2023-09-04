@@ -133,7 +133,7 @@ export const favoriteListContainer = css({
    padding: '0 24px',
    margin: '16px 0',
    color: '#FFD500',
-   height: '400px',
+   maxHeight: '400px',
    overflow: 'auto',
 })
 
