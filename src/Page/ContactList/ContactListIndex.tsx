@@ -190,7 +190,7 @@ export function ContactListPage(){
       const Phone1Temp = phone1Input;
       const Phone2Temp = phone2Input;
       const Phone3Temp = phone3Input;
-      let format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+      let format = /[ `!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/;
       if(!firstNameArray?.includes(firstNameTemp) && !lastNameArray?.includes(lastNameTemp) && !format.test(firstNameTemp) && !format.test(lastNameTemp) && firstNameTemp !== '' && lastNameTemp !== '' && Phone1Temp !== ''){
          const phoneArrayInput: Array<PhoneTypes> = [{
             number: Phone1Temp,
