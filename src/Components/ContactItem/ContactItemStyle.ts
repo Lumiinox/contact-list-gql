@@ -28,12 +28,19 @@ export const listItemLowerContainer = css({
 export const iconContainer = css({
    display: 'flex',
    justifyContent: 'space-between',
-   width: '25%',
+   width: '40%',
 })
 
 
 export const editButtonIcon = css({
    color: '#fffffff',
+})
+
+export const phoneNumberStyle = css({
+   width: '99%',
+   overflow: 'hidden',
+   whiteSpace: 'nowrap',
+   textOverflow: 'ellipsis',
 })
 
 export const contactItemNameContainer = css({

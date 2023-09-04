@@ -1,4 +1,4 @@
-import { PhoneTypes } from "../GlobalType";
+import { PhoneTypes } from "../../GlobalType";
 
 export interface ContactItemPropsType{
    index?: number,
@@ -9,4 +9,5 @@ export interface ContactItemPropsType{
    phones: Array<PhoneTypes>,
    isFavorite: boolean,
    favoriteButtonHandler: (selectedId: number, isFavorite: boolean) => void,
+   trashButtonHandler: (selectedId: number) => void,
 }

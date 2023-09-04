@@ -74,7 +74,7 @@ export const EDIT_PHONE_NUMBER = gql`
 `;
 
 export const DELETE_CONTACT_PHONE = gql`
-   mutation MyMutation($id: Int!) {
+   mutation DeleteContact($id: Int!) {
          delete_contact_by_pk(id: $id) {
          first_name
          last_name
