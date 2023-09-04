@@ -34,7 +34,7 @@ export function ContactListPage(){
    const [favoriteDisplayedData, setFavoriteDisplayedData] = useState<Array<ContactDataType>>([contactDataDef]);
   
    useEffect(() =>{
-      const favListLocal: Array<number> = [];
+      const favListLocal = JSON.parse(localStorage.getItem('favoriteListLocal') || '{}');
       console.log('useEffect is running')
       if(dummyData.data.contact.length > 0){
          var normalizedData: Array<ContactDataType> = [];
