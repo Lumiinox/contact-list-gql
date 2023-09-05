@@ -130,7 +130,7 @@ export const favoriteContactTitle = css({
 export const favoriteListContainer = css({
    borderLeft: '2px solid #FFD500',
    borderRight: '2px solid #FFD500',
-   padding: '0 24px',
+   padding: '0 16px',
    margin: '16px 0',
    color: '#FFD500',
    maxHeight: '400px',

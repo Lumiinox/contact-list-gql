@@ -10,4 +10,5 @@ export interface ContactItemPropsType{
    isFavorite: boolean,
    favoriteButtonHandler: (selectedId: number, isFavorite: boolean) => void,
    trashButtonHandler: (selectedId: number) => void,
+   editButtonHandler: (oldFirstName: string, oldLastName: string, oldPhones: Array<PhoneTypes>, id: number) => void,
 }

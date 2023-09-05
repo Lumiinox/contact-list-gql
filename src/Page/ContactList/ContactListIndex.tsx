@@ -1,7 +1,6 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { css, jsx } from '@emotion/react'
+import { jsx } from '@emotion/react'
 import React from "react";
 import {contactFormMainContainer, contactListBackground, contactListContainer, contentContainer, favoriteContactTitle, favoriteListContainer, formButtonStyle, formButtonWrapper, formSubtitleStyle, formTitleStyle, formWrapper, headerContainer, mainBodyContainer, mainTitle, newContactButtonStyle, paginationPageButton, paginationPageContainer, textFieldStyle} from "./ContactListStyle";
 import { useState, useEffect  } from 'react';
@@ -10,8 +9,9 @@ import { ContactDataType, PhoneTypes } from '../../GlobalType';
 import { EmotionJSX } from '@emotion/react/types/jsx-namespace';
 import swal from 'sweetalert';
 import { useMutation, useQuery } from '@apollo/client';
-import { ADD_CONTACT_WITH_PHONE, DELETE_CONTACT_PHONE } from '../../GraphQL/Mutation';
+import { ADD_CONTACT_WITH_PHONE, ADD_NUMBER_TO_CONTACT, DELETE_CONTACT_PHONE, EDIT_CONTACT, EDIT_PHONE_NUMBER } from '../../GraphQL/Mutation';
 import { GET_ALL_CONTACTS } from '../../GraphQL/Queries';
+import { EditedDataType } from './ContactListTypes';
 
 export function ContactListPage(){   
    const contactDataDef = {
@@ -27,9 +27,8 @@ export function ContactListPage(){
    }
 
    const [contactDataMaster, setContactDataMaster] = useState<Array<ContactDataType>>([contactDataDef]);
-   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-   const [contactData, setContactData] = useState<Array<ContactDataType>>([contactDataDef]);
    const [contactDataDisplay, setContactDataDisplay] = useState<Array<Array<ContactDataType>>>([[contactDataDef]])
+   const [currEditedData, setCurrEditedData] = useState<EditedDataType>()
    const [paginationPageElement, setPaginationPageElement] = useState<Array<EmotionJSX.Element>>();
    const [favoriteList, setFavoriteList] = useState<Array<number>>([]);
    const [favoriteDisplayedData, setFavoriteDisplayedData] = useState<Array<ContactDataType>>([contactDataDef]);
@@ -37,6 +36,7 @@ export function ContactListPage(){
    const [lastNameArray, setLastNameArray] = useState<Array<string>>();
    const [showContactForm, setShowContactForm] = useState(false);
    const [selectedPaginationPage, setSelectedPaginationPage] = useState(0);
+   const [isEditMode, setIsEditMode] = useState(false);
    const [firstNameInput, setFirstNameInput] = useState('');
    const [lastNameInput, setLastNameInput] = useState('');
    const [phone1Input, setPhone1Input] = useState('');
@@ -45,12 +45,18 @@ export function ContactListPage(){
 
    const {loading, data} = useQuery(GET_ALL_CONTACTS)
    const [createNewContact, {error}] = useMutation(ADD_CONTACT_WITH_PHONE);
+   const [addNumberToContact] = useMutation(ADD_NUMBER_TO_CONTACT);
+   const [editContactById] = useMutation(EDIT_CONTACT);
+   const [editPhoneNumber] = useMutation(EDIT_PHONE_NUMBER);
    const [deleteContact] = useMutation(DELETE_CONTACT_PHONE);
+
+   const specialCharaRegex = /[ `!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/;
 
    useEffect(() =>{
       const favListLocal = JSON.parse(localStorage.getItem('favoriteListLocal') || '{}');
       if(!loading){
          const contactDataApi = data;
+         console.log(contactDataApi);
          var normalizedData: Array<ContactDataType> = [];
          var contactDataTemp: Array<ContactDataType> = [];
          var favoriteDataTemp: Array<ContactDataType> = [];
@@ -104,7 +110,7 @@ export function ContactListPage(){
          }
          paginationPage();
          setContactDataMaster(normalizedData);
-         setContactData(contactDataTemp);
+
          setFavoriteDisplayedData(favoriteDataTemp);
          setContactDataDisplay(paginatedDataTemp);
          setFavoriteList(favoriteListTemp);
@@ -118,6 +124,7 @@ export function ContactListPage(){
    }
 
    const handleNewContactButton = () => {
+      setIsEditMode(false);
       setShowContactForm(true);
    }
 
@@ -126,7 +133,16 @@ export function ContactListPage(){
    }
 
    const handleCancelFormButton = () => {
-      setShowContactForm(false);
+      setFirstNameInput('');
+      setLastNameInput('');
+      setPhone1Input('');
+      setPhone2Input('');
+      setPhone3Input('');
+      if (isEditMode){
+         refreshPage();
+      } else {
+         setShowContactForm(false);
+      }
    }
 
    const refreshDisplayedData = () => {
@@ -144,7 +160,6 @@ export function ContactListPage(){
          }
       }
       setFavoriteDisplayedData(favoriteDataTemp);
-      setContactData(newContactData);
       console.log('contact data from refresh display')
       console.log(newContactData);
 
@@ -190,8 +205,7 @@ export function ContactListPage(){
       const Phone1Temp = phone1Input;
       const Phone2Temp = phone2Input;
       const Phone3Temp = phone3Input;
-      let format = /[ `!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/;
-      if(!firstNameArray?.includes(firstNameTemp) && !lastNameArray?.includes(lastNameTemp) && !format.test(firstNameTemp) && !format.test(lastNameTemp) && firstNameTemp !== '' && lastNameTemp !== '' && Phone1Temp !== ''){
+      if(!firstNameArray?.includes(firstNameTemp) && !lastNameArray?.includes(lastNameTemp) && !specialCharaRegex.test(firstNameTemp) && !specialCharaRegex.test(lastNameTemp) && firstNameTemp !== '' && lastNameTemp !== '' && Phone1Temp !== ''){
          const phoneArrayInput: Array<PhoneTypes> = [{
             number: Phone1Temp,
          }];
@@ -206,9 +220,6 @@ export function ContactListPage(){
                number: Phone3Temp,
             })
          }
-
-         console.log(phoneArrayInput);
-
          createNewContact({
             variables: {
                first_name: firstNameTemp,
@@ -232,6 +243,100 @@ export function ContactListPage(){
       }
    }
 
+   const handleEditSubmit = () => {
+      const firstNameTemp = firstNameInput;
+      const lastNameTemp = lastNameInput;
+      const phone1Temp = phone1Input;
+      const phone2Temp = phone2Input;
+      const phone3Temp = phone3Input;
+      const oldDataTemp = currEditedData;
+      console.log(firstNameTemp !== oldDataTemp?.firstName);
+      console.log(lastNameTemp !== oldDataTemp?.lastName);
+      if (firstNameTemp !== oldDataTemp?.firstName || lastNameTemp !== oldDataTemp?.lastName){
+         if(!specialCharaRegex.test(firstNameTemp) && !specialCharaRegex.test(lastNameTemp) && firstNameTemp !== '' && lastNameTemp !== ''){
+            editContactById({
+               variables: {
+                  id: oldDataTemp?.id,
+                  _set: {
+                     first_name: firstNameTemp,
+                     last_name: lastNameTemp
+                  },
+               }
+            });
+         } else {
+            swal('Name already exist or have special characters');
+         }
+      }
+      console.log('testtest1');
+      if(oldDataTemp && oldDataTemp.phones.length >= 1){
+         if(phone1Temp !== oldDataTemp.phones[0].number){
+            console.log('testtest1.1');
+            editPhoneNumber({
+               variables: {
+                  pk_columns:{
+                     number: oldDataTemp.phones[0].number,
+                     contact_id: oldDataTemp?.id,
+                  },
+                  new_phone_number: phone1Temp
+               }
+            });
+         }
+      } else {
+         addNumberToContact({
+            variables:{
+               contact_id: oldDataTemp?.id,
+               phone_number: phone1Temp,
+            },
+         })
+      }
+
+      console.log('testtest2');
+      if(oldDataTemp && oldDataTemp.phones.length >= 2){
+         if(phone2Temp !== oldDataTemp?.phones[1].number){
+            console.log('testtest2.1');
+            editPhoneNumber({
+               variables: {
+                  pk_columns:{
+                     number: oldDataTemp?.phones[1].number || '',
+                     contact_id: oldDataTemp?.id,
+                  },
+                  new_phone_number: phone2Temp
+               }
+            });
+         }
+      } else {
+         addNumberToContact({
+            variables:{
+               contact_id: oldDataTemp?.id,
+               phone_number: phone2Temp,
+            },
+         })
+      }
+
+      console.log('testtest3');
+      if(oldDataTemp && oldDataTemp.phones.length >= 3){
+         if(phone3Temp !== oldDataTemp?.phones[2].number){
+            console.log('testtest3.1');
+            editPhoneNumber({
+               variables: {
+                  pk_columns:{
+                     number: oldDataTemp?.phones[2].number || '',
+                     contact_id: oldDataTemp?.id,
+                  },
+                  new_phone_number: phone3Temp
+               }
+            });
+         }
+      } else {
+         addNumberToContact({
+            variables:{
+               contact_id: oldDataTemp?.id,
+               phone_number: phone3Temp,
+            },
+         })
+      }
+   }
+
    const handleDeleteButton = (selectedId: number) => {
       deleteContact({
          variables: {
@@ -241,33 +346,53 @@ export function ContactListPage(){
       refreshPage();
    }
 
-   const contactForm = () => {
+   const handleEditForm = (oldFirstName: string, oldLastName: string, oldPhones: Array<PhoneTypes>, id: number) => {
+      const currSelectedDataTemp = {
+         firstName: oldFirstName,
+         lastName: oldLastName,
+         phones: oldPhones,
+         id: id
+      }
+      setFirstNameInput(oldFirstName);
+      setLastNameInput(oldLastName);
+      setPhone1Input(oldPhones[0] ? oldPhones[0].number : '');
+      setPhone2Input(oldPhones[1] ? oldPhones[1].number : '');
+      setPhone3Input(oldPhones[2] ? oldPhones[2].number : '');
+      setCurrEditedData(currSelectedDataTemp);
+      setIsEditMode(true);
+      setShowContactForm(true);
+   }
+
+   const createContact = () => {
       return(
          <div css={contactFormMainContainer}>
             <div css={formTitleStyle}>Contact Form</div>
-            <div css={formSubtitleStyle}>Create Contact</div>
+            <div css={formSubtitleStyle}>{isEditMode ? "Edit Contact" : "Create Contact"}</div>
             <div css={formWrapper}>
                <div>First Name</div>
-               <input type="text" css={textFieldStyle} name="firstName" onChange={(e) => {setFirstNameInput(e.target.value)}}></input>
+               <input type="text" css={textFieldStyle} name="firstName" value={firstNameInput} onChange={(e) => {setFirstNameInput(e.target.value)}}></input>
 
                <div>Last Name</div>
-               <input type="text" css={textFieldStyle} name="lastName" onChange={(e) => {setLastNameInput(e.target.value)}}></input>
+               <input type="text" css={textFieldStyle} name="lastName" value={lastNameInput} onChange={(e) => {setLastNameInput(e.target.value)}}></input>
 
                <div>Phone 1</div>
-               <input type="text" css={textFieldStyle} name="phone1" onChange={(e) => {setPhone1Input(e.target.value)}}></input>
+               <input type="text" css={textFieldStyle} name="phone1"  value={phone1Input}onChange={(e) => {setPhone1Input(e.target.value)}}></input>
 
                <div>Phone 2</div>
-               <input type="text" css={textFieldStyle} name="phone2" onChange={(e) => {setPhone2Input(e.target.value)}}></input>
+               <input type="text" css={textFieldStyle} name="phone2"  value={phone2Input} onChange={(e) => {setPhone2Input(e.target.value)}}></input>
 
                <div>Phone 3</div>
-               <input type="text" css={textFieldStyle} name="phone3" onChange={(e) => {setPhone3Input(e.target.value)}}></input>
+               <input type="text" css={textFieldStyle} name="phone3" value={phone3Input} onChange={(e) => {setPhone3Input(e.target.value)}}></input>
             </div>
 
             <div css={formButtonWrapper}>
-               <button css={formButtonStyle} onClick={handleSubmitFormCreate}>Submit</button>
-               <button css={formButtonStyle} onClick={handleCancelFormButton}>Cancel</button>
+               {isEditMode ? 
+                  <button css={formButtonStyle} onClick={handleEditSubmit }>Edit</button> 
+                  : 
+                  <button css={formButtonStyle} onClick={handleSubmitFormCreate}>Submit</button>
+               }
+               <button css={formButtonStyle} onClick={handleCancelFormButton}>{isEditMode ? 'Done' : 'Close'}</button>
             </div>
-
          </div>
       )
    }
@@ -278,7 +403,7 @@ export function ContactListPage(){
             <div css={headerContainer}>
                <div css={mainTitle}>Contacts</div>
             </div>
-            {showContactForm && contactForm()}
+            {showContactForm && createContact()}
             <div css={contentContainer}>
                <div css={favoriteListContainer}>
                   <div css={favoriteContactTitle}>Favorite Contacts</div>
@@ -295,6 +420,7 @@ export function ContactListPage(){
                            isFavorite={val.isFavorite}
                            favoriteButtonHandler={() => handleFavoriteButtonPress(val.id, val.isFavorite)}
                            trashButtonHandler={() => handleDeleteButton(val.id)}
+                           editButtonHandler={() => handleEditForm(val.firstName, val.lastName, val.phones, val.id)}
                         ></ContactListItem>
                      ) : <div>Empty</div>}
                   </div>
@@ -313,6 +439,7 @@ export function ContactListPage(){
                         isFavorite={val.isFavorite}
                         favoriteButtonHandler={() => handleFavoriteButtonPress(val.id, val.isFavorite)}
                         trashButtonHandler={() => handleDeleteButton(val.id)}
+                        editButtonHandler={() => handleEditForm(val.firstName, val.lastName, val.phones, val.id)}
                      ></ContactListItem>
                   )}
                </div>

@@ -9,7 +9,7 @@ import { faHeart as faHeartSolid, faPencil, faTrash } from '@fortawesome/free-so
 import { faHeart as faHeartRegular } from '@fortawesome/free-regular-svg-icons'
 import { ContactItemPropsType } from './ContactItemTypes';
 
-export function ContactListItem({index, id = 0, firstName = '', lastName = '', createdAt = '', phones, isFavorite = false, favoriteButtonHandler, trashButtonHandler}: ContactItemPropsType){   
+export function ContactListItem({index, id = 0, firstName = '', lastName = '', createdAt = '', phones, isFavorite = false, favoriteButtonHandler, trashButtonHandler, editButtonHandler}: ContactItemPropsType){   
    return(
       <div css={listItemContainer(isFavorite)}>
          <div css={listItemUpperContainer}>
@@ -22,7 +22,7 @@ export function ContactListItem({index, id = 0, firstName = '', lastName = '', c
             </div>
             <div css={iconContainer}>
                {isFavorite ? <FontAwesomeIcon icon={faHeartSolid} css={editButtonIcon} onClick={() => favoriteButtonHandler(id, isFavorite)}/> : <FontAwesomeIcon icon={faHeartRegular} css={editButtonIcon} onClick={() => favoriteButtonHandler(id, isFavorite)}/>}
-               <FontAwesomeIcon icon={faPencil} css={editButtonIcon}/>
+               <FontAwesomeIcon icon={faPencil} css={editButtonIcon} onClick={() => editButtonHandler(firstName, lastName, phones, id)}/>
                <FontAwesomeIcon icon={faTrash} css={editButtonIcon} onClick={() => trashButtonHandler(id)}/>
             </div>
          </div>
