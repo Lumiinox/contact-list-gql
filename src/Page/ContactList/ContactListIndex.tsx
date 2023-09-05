@@ -406,24 +406,22 @@ export function ContactListPage(){
             {showContactForm && createContact()}
             <div css={contentContainer}>
                <div css={favoriteListContainer}>
-                  <div css={favoriteContactTitle}>Favorite Contacts</div>
-                  <div>
-                     {favoriteDisplayedData ? favoriteDisplayedData.map((val, index) => 
-                        <ContactListItem 
-                        key={index}
-                           index={index}
-                           id={val.id} 
-                           firstName={val.firstName} 
-                           lastName={val.lastName} 
-                           createdAt={val.createdAt} 
-                           phones={val.phones}
-                           isFavorite={val.isFavorite}
-                           favoriteButtonHandler={() => handleFavoriteButtonPress(val.id, val.isFavorite)}
-                           trashButtonHandler={() => handleDeleteButton(val.id)}
-                           editButtonHandler={() => handleEditForm(val.firstName, val.lastName, val.phones, val.id)}
-                        ></ContactListItem>
-                     ) : <div>Empty</div>}
-                  </div>
+                  <div css={favoriteContactTitle}>Favorite</div>
+                  {favoriteDisplayedData ? favoriteDisplayedData.map((val, index) => 
+                     <ContactListItem 
+                     key={index}
+                        index={index}
+                        id={val.id} 
+                        firstName={val.firstName} 
+                        lastName={val.lastName} 
+                        createdAt={val.createdAt} 
+                        phones={val.phones}
+                        isFavorite={val.isFavorite}
+                        favoriteButtonHandler={() => handleFavoriteButtonPress(val.id, val.isFavorite)}
+                        trashButtonHandler={() => handleDeleteButton(val.id)}
+                        editButtonHandler={() => handleEditForm(val.firstName, val.lastName, val.phones, val.id)}
+                     ></ContactListItem>
+                  ) : <div>Empty</div>}
                </div>
                <div css={contactListContainer}>
                   <button css={newContactButtonStyle} onClick={handleNewContactButton}>New Contact</button>

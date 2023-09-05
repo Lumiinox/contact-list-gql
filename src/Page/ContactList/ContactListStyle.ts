@@ -31,8 +31,7 @@ export const mainTitle = css(
    {  
    color: '#ffffff',
    margin: '0 auto',
-   },
-      
+   },  
    responsiveStyle({
          fontSize: ['32px', '46px', '56px', '64px'],
       })
@@ -50,8 +49,9 @@ export const contactFormMainContainer = css({
    fontSize: '16px',
    display: 'flex',
    flexDirection: 'column',
-   border: '2px solid #FFFFFF'
-})
+   border: '2px solid #FFFFFF',
+   },
+)
 
 export const formWrapper = css({
    padding: '16px',
@@ -99,12 +99,15 @@ export const formButtonStyle = css({
 
 export const paginationPageContainer = css({
    display: 'flex',
-   justifyContent: 'flex-start',
    padding: '',
-   width: '96%',
+   justifyContent: 'flex-start',
    margin: '0 auto',
    overflow: 'auto',
-})
+   },
+   responsiveStyle({
+      width: ['50vh','60vh','80vh','100vh']
+   })
+)
 
 export const paginationPageButton = css({
    background: '#000000',
@@ -118,24 +121,43 @@ export const paginationPageButton = css({
 export const contactListContainer = css({
    borderLeft: '2px solid #FFFFFF',
    borderRight: '2px solid #FFFFFF',
-   padding: '0 24px',
+   padding: '0 8px',
    margin: '16px 0',
-})
+   display: 'flex',
+   flexWrap: 'wrap',
+   justifyContent: 'center',
+   },   
+   responsiveStyle({
+      width: ['50vh','60vh','80vh','100vh'],
+   })
+)
 
 export const favoriteContactTitle = css({
    textAlign: 'center',
-   fontSize: '24px'
-})
+   width: '100%', 
+   },  
+   responsiveStyle({
+      fontSize: ['24px', '32px', '40px', '40px'],
+   })
+)
 
 export const favoriteListContainer = css({
    borderLeft: '2px solid #FFD500',
    borderRight: '2px solid #FFD500',
-   padding: '0 16px',
+   padding: '0 8px',
    margin: '16px 0',
    color: '#FFD500',
    maxHeight: '400px',
    overflow: 'auto',
-})
+   display: 'flex',
+   flexWrap: 'wrap',
+   justifyContent: 'center',
+   },   responsiveStyle({
+      width: ['50vh','60vh','80vh','100vh'],
+
+   })
+)
+
 
 export const newContactButtonStyle = css({
    width: '100%',
